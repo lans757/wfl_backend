@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model equipos {
+  id          Int         @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  estadio     String?
+  ciudad      String?
+  imagen      String?
+  serieId     Int?
+  serie       series?     @relation(fields: [serieId], references: [id])
+  createAt    DateTime    @default(now())
+  updateAt    DateTime    @updatedAt
+  jugadores   jugadores[]
+}
+
+model series {
+  id              Int       @id @default(autoincrement())
+  nombre          String
+  descripcion     String?
+  fechaLanzamiento DateTime?
+  estado          String?
+  temporada       String?
+  pais            String?
+  imagen          String?
+  createAt        DateTime  @default(now())
+  updateAt        DateTime  @updatedAt
+  equipos         equipos[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model jugadores {
+  id                  Int       @id @default(autoincrement())
+  nombre              String
+  numeroCamiseta      String
+  posicion            String
+  fechaNacimiento     DateTime?
+  nacionalidad        String?
+  descripcion         String?
+  estatura            Float?
+  peso                Float?
+  posicionSecundaria1 String?
+  posicionSecundaria2 String?
+  rareza              String?
+  imagen              String?
+  createAt            DateTime  @default(now())
+  updateAt            DateTime  @updatedAt
+  equipoId            Int?
+  equipo              equipos?  @relation(fields: [equipoId], references: [id])
+}

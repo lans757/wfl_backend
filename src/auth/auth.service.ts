@@ -1,0 +1,82 @@
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
+
+  async validateUser(email: string, password: string): Promise<any> {
+    console.log('Validating user:', email);
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    console.log('User found:', !!user);
+    if (user && (await bcrypt.compare(password, user.password))) {
+      console.log('Password match successful');
+      const { password: _, ...result } = user;
+      return result;
+    }
+    console.log('Password match failed or user not found');
+    return null;
+  }
+
+  async login(loginDto: LoginDto) {
+    console.log('Login attempt for:', loginDto.email);
+    const user = await this.validateUser(loginDto.email, loginDto.password);
+    if (!user) {
+      console.log('Login failed: invalid credentials');
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+    console.log('Login successful for user:', user.id);
+    const payload = { email: user.email, sub: user.id, role: user.role };
+    return {
+      access_token: this.jwtService.sign(payload),
+      user,
+    };
+  }
+
+  async register(registerDto: RegisterDto) {
+    // Verificar si el email ya existe
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: registerDto.email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Este email ya está en uso. Intenta iniciar sesión o usar otro correo.');
+    }
+
+    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+    const user = await this.prisma.user.create({
+      data: {
+        email: registerDto.email,
+        password: hashedPassword,
+        name: registerDto.name,
+        role: registerDto.role || 'user', // Permitir especificar rol, por defecto 'user'
+      },
+    });
+    const { password, ...result } = user;
+    const payload = { email: user.email, sub: user.id, role: user.role };
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: result,
+    };
+  }
+
+  async getAllUsers() {
+    const users = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    return users;
+  }
+}
