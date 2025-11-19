@@ -3,13 +3,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { EquiposService } from './equipos.service';
 import { CreateEquipoDto } from './dto/create-equipo.dto';
 import { UpdateEquipoDto } from './dto/update-equipo.dto';
+import { FileUploadService } from '../common/file-upload.service';
 
 @Controller('equipos')
 export class EquiposController {
   constructor(private readonly equiposService: EquiposService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('imagen'))
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
   create(@Body() createEquipoDto: CreateEquipoDto, @UploadedFile() imagen?: Express.Multer.File) {
     return this.equiposService.create(createEquipoDto, imagen);
   }
@@ -35,8 +36,9 @@ export class EquiposController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEquipoDto: UpdateEquipoDto) {
-    return this.equiposService.update(+id, updateEquipoDto);
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
+  update(@Param('id') id: string, @Body() updateEquipoDto: UpdateEquipoDto, @UploadedFile() imagen?: Express.Multer.File) {
+    return this.equiposService.update(+id, updateEquipoDto, imagen);
   }
 
   @Delete(':id')

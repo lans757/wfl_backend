@@ -3,13 +3,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JugadoresService } from './jugadores.service';
 import { CreateJugadoresDto } from './dto/create-jugadores.dto';
 import type { UpdateJugadoresDto } from './dto/update-jugadores.dto';
+import { FileUploadService } from '../common/file-upload.service';
 
 @Controller('jugadores')
 export class JugadoresController {
   constructor(private readonly jugadoresService: JugadoresService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('imagen'))
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
   create(@Body() createJugadoresDto: CreateJugadoresDto, @UploadedFile() imagen?: Express.Multer.File) {
     return this.jugadoresService.create(createJugadoresDto, imagen);
   }
@@ -35,9 +36,15 @@ export class JugadoresController {
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('imagen'))
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
   update(@Param('id') id: string, @Body() updateJugadoresDto: UpdateJugadoresDto, @UploadedFile() imagen?: Express.Multer.File) {
     return this.jugadoresService.update(+id, updateJugadoresDto, imagen);
+  }
+
+  @Patch(':id/imagen')
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
+  updateImagen(@Param('id') id: string, @UploadedFile() imagen: Express.Multer.File) {
+    return this.jugadoresService.updateImagen(+id, imagen);
   }
 
   @Delete(':id')

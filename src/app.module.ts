@@ -6,6 +6,7 @@ import { EquiposModule } from './equipos/equipos.module';
 import { SeriesModule } from './series/series.module';
 import { AuthModule } from './auth/auth.module';
 import { PrismaService } from './prisma/prisma.service';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PrismaService } from './prisma/prisma.service';
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
     }),
+    CommonModule,
     JugadoresModule,
     EquiposModule,
     SeriesModule,

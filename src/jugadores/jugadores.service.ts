@@ -13,50 +13,9 @@ export class JugadoresService {
     try {
       let imagenPath: string | undefined;
 
-      if (imagen && imagen.buffer) {
-        // Obtener información del equipo y serie si equipoId está presente
-        let equipoNombre = 'sin_equipo';
-        let serieNombre = 'sin_serie';
-
-        if (createJugadoresDto.equipoId) {
-          const equipo = await this.prismaService.equipos.findUnique({
-            where: { id: createJugadoresDto.equipoId },
-            include: { serie: true }
-          });
-
-          if (equipo) {
-            equipoNombre = equipo.nombre.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '');
-            if (equipo.serie) {
-              serieNombre = equipo.serie.nombre.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '');
-            }
-          }
-        }
-
-        // Generar fecha de creación en formato YYYY/MM/DD
-        const fechaCreacion = new Date().toISOString().split('T')[0].replace(/-/g, '/');
-
-        // Sanitizar nombre del jugador
-        const nombreJugador = createJugadoresDto.nombre.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '');
-
-        // Obtener extensión del archivo
-        const extension = imagen.originalname.split('.').pop()?.toLowerCase() || 'jpg';
-
-        // Generar nombre del archivo
-        const filename = `${nombreJugador}-${equipoNombre}-${serieNombre}-${fechaCreacion}.${extension}`;
-
-        // Guardar la imagen en el directorio de uploads
-        const fs = require('fs');
-        const path = require('path');
-        const uploadDir = path.join(__dirname, '../../uploads');
-
-        if (!fs.existsSync(uploadDir)) {
-          fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
-        const filePath = path.join(uploadDir, filename);
-        fs.writeFileSync(filePath, imagen.buffer);
-
-        imagenPath = `/uploads/${filename}`;
+      if (imagen) {
+        // Multer ya guardó el archivo, usar el filename generado
+        imagenPath = `/uploads/${imagen.filename}`;
       }
 
       return await this.prismaService.jugadores.create({
@@ -112,7 +71,7 @@ export class JugadoresService {
   private addImageUrls(jugadores: any[]) {
     return jugadores.map(jugador => ({
       ...jugador,
-      imagenUrl: jugador.imagen ? `${process.env.BASE_URL || 'http://localhost:4000'}/uploads/${jugador.imagen}` : null
+      imagenUrl: jugador.imagen ? `${process.env.BASE_URL || 'http://localhost:4000'}${jugador.imagen}` : null
     }));
   }
 
@@ -120,12 +79,23 @@ export class JugadoresService {
     const jugadorFound = await this.prismaService.jugadores.findUnique(
       {
         where: { id },
-        include: {
-          equipo: {
-            include: {
-              serie: true
-            }
-          }
+        select: {
+          id: true,
+          nombre: true,
+          numeroCamiseta: true,
+          posicion: true,
+          fechaNacimiento: true,
+          nacionalidad: true,
+          descripcion: true,
+          estatura: true,
+          peso: true,
+          posicionSecundaria1: true,
+          posicionSecundaria2: true,
+          rareza: true,
+          createAt: true,
+          updateAt: true,
+          equipoId: true,
+          // Excluimos equipo e imagen de la respuesta
         }
       }
     );
@@ -133,68 +103,39 @@ export class JugadoresService {
     if (!jugadorFound) {
       throw new NotFoundException(`Jugador con el id ${id}, no ha sido encontrado`);
     }
-    return this.addImageUrls([jugadorFound])[0];
+    return jugadorFound;
   }
 
   async update(id: number, updateJugadoresDto: UpdateJugadoresDto, imagen?: Express.Multer.File) {
     try {
       let imagenPath: string | undefined;
 
-      if (imagen && imagen.buffer) {
-        // Obtener información del jugador existente para generar el nombre del archivo
-        const jugadorExistente = await this.prismaService.jugadores.findUnique({
-          where: { id },
-          include: {
-            equipo: {
-              include: {
-                serie: true
-              }
-            }
-          }
-        });
-
-        if (!jugadorExistente) {
-          throw new NotFoundException(`Jugador con el id ${id}, no ha sido encontrado`);
-        }
-
-        let equipoNombre = 'sin_equipo';
-        let serieNombre = 'sin_serie';
-
-        if (jugadorExistente.equipo) {
-          equipoNombre = jugadorExistente.equipo.nombre.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '');
-          if (jugadorExistente.equipo.serie) {
-            serieNombre = jugadorExistente.equipo.serie.nombre.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '');
-          }
-        }
-
-        // Generar fecha de actualización en formato YYYY/MM/DD
-        const fechaActualizacion = new Date().toISOString().split('T')[0].replace(/-/g, '/');
-
-        // Sanitizar nombre del jugador
-        const nombreJugador = (updateJugadoresDto.nombre || jugadorExistente.nombre).replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '');
-
-        // Obtener extensión del archivo
-        const extension = imagen.originalname.split('.').pop()?.toLowerCase() || 'jpg';
-
-        // Generar nombre del archivo
-        const filename = `${nombreJugador}-${equipoNombre}-${serieNombre}-${fechaActualizacion}.${extension}`;
-
-        // Guardar la imagen en el directorio de uploads
-        const fs = require('fs');
-        const path = require('path');
-        const uploadDir = path.join(__dirname, '../../uploads');
-
-        if (!fs.existsSync(uploadDir)) {
-          fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
-        const filePath = path.join(uploadDir, filename);
-        fs.writeFileSync(filePath, imagen.buffer);
-
-        imagenPath = `/uploads/${filename}`;
+      if (imagen) {
+        // Multer ya guardó el archivo, usar el filename generado
+        imagenPath = `/uploads/${imagen.filename}`;
       }
 
-      const dataToUpdate = { ...updateJugadoresDto };
+      // Convertir campos numéricos de strings a números
+      const dataToUpdate: any = { ...updateJugadoresDto };
+
+      if (dataToUpdate.estatura !== undefined && dataToUpdate.estatura !== null && dataToUpdate.estatura !== '') {
+        dataToUpdate.estatura = parseFloat(dataToUpdate.estatura);
+      } else {
+        dataToUpdate.estatura = null;
+      }
+
+      if (dataToUpdate.peso !== undefined && dataToUpdate.peso !== null && dataToUpdate.peso !== '') {
+        dataToUpdate.peso = parseFloat(dataToUpdate.peso);
+      } else {
+        dataToUpdate.peso = null;
+      }
+
+      if (dataToUpdate.equipoId !== undefined && dataToUpdate.equipoId !== null && dataToUpdate.equipoId !== '') {
+        dataToUpdate.equipoId = parseInt(dataToUpdate.equipoId);
+      } else {
+        dataToUpdate.equipoId = null;
+      }
+
       if (imagenPath) {
         dataToUpdate.imagen = imagenPath;
       }
@@ -215,6 +156,56 @@ export class JugadoresService {
           error: 'ERR_002',
           message: 'Error interno del servidor al actualizar el jugador',
           details: 'Ocurrió un error inesperado durante la actualización del jugador'
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async updateImagen(id: number, imagen: Express.Multer.File) {
+    try {
+      // Validar que se proporcionó una imagen
+      if (!imagen || !imagen.filename) {
+        throw new HttpException(
+          {
+            error: 'ERR_004',
+            message: 'No se proporcionó una imagen válida',
+            details: 'Debe enviar un archivo de imagen en el campo "imagen"'
+          },
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
+      const imagenPath = `/uploads/${imagen.filename}`;
+
+      const jugador = await this.prismaService.jugadores.update({
+        where: { id },
+        data: { imagen: imagenPath },
+        select: {
+          id: true,
+          nombre: true,
+          imagen: true,
+        },
+      });
+
+      return jugador;
+    } catch (error) {
+      // Si es un error de Prisma (jugador no encontrado)
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Jugador con el id ${id}, no ha sido encontrado`);
+      }
+
+      // Si ya lanzamos HttpException, no la envolvemos
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      console.error('Error actualizando imagen del jugador:', error);
+      throw new HttpException(
+        {
+          error: 'ERR_003',
+          message: 'Error interno del servidor al actualizar la imagen del jugador',
+          details: 'Ocurrió un error inesperado durante la actualización de la imagen'
         },
         HttpStatus.INTERNAL_SERVER_ERROR
       );

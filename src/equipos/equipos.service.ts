@@ -11,39 +11,16 @@ export class EquiposService {
   private addImageUrls(equipos: any[]) {
     return equipos.map(equipo => ({
       ...equipo,
-      imagenUrl: equipo.imagen ? `${process.env.BASE_URL || 'http://localhost:4000'}/uploads/${equipo.imagen}` : null
+      imagenUrl: equipo.imagen ? `${process.env.BASE_URL || 'http://localhost:4000'}${equipo.imagen}` : null
     }));
   }
 
   async create(createEquipoDto: CreateEquipoDto, imagen?: Express.Multer.File) {
     let imagenPath: string | undefined;
 
-    if (imagen && imagen.buffer) {
-      // Generar fecha de creación en formato YYYY/MM/DD
-      const fechaCreacion = new Date().toISOString().split('T')[0].replace(/-/g, '/');
-
-      // Sanitizar nombre del equipo
-      const nombreEquipo = createEquipoDto.nombre.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '');
-
-      // Obtener extensión del archivo
-      const extension = imagen.originalname.split('.').pop()?.toLowerCase() || 'jpg';
-
-      // Generar nombre del archivo
-      const filename = `equipo-${nombreEquipo}-${fechaCreacion}.${extension}`;
-
-      // Guardar la imagen en el directorio de uploads
-      const fs = require('fs');
-      const path = require('path');
-      const uploadDir = path.join(__dirname, '../../uploads');
-
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const filePath = path.join(uploadDir, filename);
-      fs.writeFileSync(filePath, imagen.buffer);
-
-      imagenPath = `/uploads/${filename}`;
+    if (imagen) {
+      // Multer ya guardó el archivo, usar el filename generado
+      imagenPath = `/uploads/${imagen.filename}`;
     }
 
     const { serieId, ...equipoData } = createEquipoDto;
@@ -61,7 +38,10 @@ export class EquiposService {
 
   async findAll() {
     const equipos = await this.prismaService.equipos.findMany({
-      include: { jugadores: true }
+      include: {
+        jugadores: true,
+        serie: true
+      }
     });
     return this.addImageUrls(equipos);
   }
@@ -91,10 +71,22 @@ export class EquiposService {
     return equipoFound;
   }
 
-  async update(id: number, updateEquipoDto: UpdateEquipoDto) {
+  async update(id: number, updateEquipoDto: UpdateEquipoDto, imagen?: Express.Multer.File) {
+    let imagenPath: string | undefined;
+
+    if (imagen) {
+      // Multer ya guardó el archivo, usar el filename generado
+      imagenPath = `/uploads/${imagen.filename}`;
+    }
+
+    const dataToUpdate: any = { ...updateEquipoDto };
+    if (imagenPath) {
+      dataToUpdate.imagen = imagenPath;
+    }
+
     const equipoActualizado = await this.prismaService.equipos.update({
       where: { id },
-      data: updateEquipoDto,
+      data: dataToUpdate,
       include: { jugadores: true, serie: true }
     });
 
@@ -102,7 +94,7 @@ export class EquiposService {
       throw new NotFoundException(`Equipo con el id ${id}, no ha sido Actualizado`);
     }
 
-    return equipoActualizado;
+    return this.addImageUrls([equipoActualizado])[0];
   }
 
   async remove(id: number) {

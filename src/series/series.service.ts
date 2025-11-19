@@ -11,7 +11,7 @@ export class SeriesService {
   private addImageUrls(series: any[]) {
     return series.map(serie => ({
       ...serie,
-      imagenUrl: serie.imagen ? `${process.env.BASE_URL || 'http://localhost:4000'}/uploads/${serie.imagen}` : null
+      imagenUrl: serie.imagen ? `${process.env.BASE_URL || 'http://localhost:4000'}${serie.imagen}` : null
     }));
   }
 
@@ -30,32 +30,9 @@ export class SeriesService {
 
     let imagenPath: string | undefined;
 
-    if (imagen && imagen.buffer) {
-      // Generar fecha de creación en formato YYYY/MM/DD
-      const fechaCreacion = new Date().toISOString().split('T')[0].replace(/-/g, '/');
-
-      // Sanitizar nombre de la serie
-      const nombreSerie = createSerieDto.nombre.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '');
-
-      // Obtener extensión del archivo
-      const extension = imagen.originalname.split('.').pop()?.toLowerCase() || 'jpg';
-
-      // Generar nombre del archivo
-      const filename = `serie-${nombreSerie}-${fechaCreacion}.${extension}`;
-
-      // Guardar la imagen en el directorio de uploads
-      const fs = require('fs');
-      const path = require('path');
-      const uploadDir = path.join(__dirname, '../../uploads');
-
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const filePath = path.join(uploadDir, filename);
-      fs.writeFileSync(filePath, imagen.buffer);
-
-      imagenPath = `/uploads/${filename}`;
+    if (imagen) {
+      // Multer ya guardó el archivo, usar el filename generado
+      imagenPath = `/uploads/${imagen.filename}`;
     }
 
     const { equiposId, ...data } = createSerieDto;
@@ -101,12 +78,20 @@ export class SeriesService {
     return serieFound;
   }
 
-  async update(id: number, updateSerieDto: UpdateSerieDto) {
+  async update(id: number, updateSerieDto: UpdateSerieDto, imagen?: Express.Multer.File) {
+    let imagenPath: string | undefined;
+
+    if (imagen) {
+      // Multer ya guardó el archivo, usar el filename generado
+      imagenPath = `/uploads/${imagen.filename}`;
+    }
+
     const { equiposId, ...data } = updateSerieDto;
     const serieActualizada = await this.prismaService.series.update({
       where: { id },
       data: {
-        ...data
+        ...data,
+        ...(imagenPath && { imagen: imagenPath })
       },
       include: { equipos: true }
     });
@@ -115,7 +100,7 @@ export class SeriesService {
       throw new NotFoundException(`Serie con el id ${id}, no ha sido actualizada`);
     }
 
-    return serieActualizada;
+    return this.addImageUrls([serieActualizada])[0];
   }
 
   async remove(id: number) {

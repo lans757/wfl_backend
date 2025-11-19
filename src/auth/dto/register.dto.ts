@@ -15,4 +15,8 @@ export class RegisterDto {
   @IsIn(['user', 'admin'])
   @IsOptional()
   role?: string;
+
+  @IsString()
+  @IsOptional()
+  imagen?: string;
 }

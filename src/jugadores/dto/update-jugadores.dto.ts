@@ -71,8 +71,4 @@ export class UpdateJugadoresDto {
   @IsString()
   @IsOptional()
   readonly imagen?: string;
-
-  @IsString()
-  @IsOptional()
-  readonly url_image?: string;
 }

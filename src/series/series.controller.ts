@@ -3,13 +3,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { SeriesService } from './series.service';
 import { CreateSerieDto } from './dto/create-serie.dto';
 import { UpdateSerieDto } from './dto/update-serie.dto';
+import { FileUploadService } from '../common/file-upload.service';
 
 @Controller('series')
 export class SeriesController {
   constructor(private readonly seriesService: SeriesService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('imagen'))
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
   create(@Body() createSerieDto: CreateSerieDto, @UploadedFile() imagen?: Express.Multer.File) {
     return this.seriesService.create(createSerieDto, imagen);
   }
@@ -35,8 +36,9 @@ export class SeriesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSerieDto: UpdateSerieDto) {
-    return this.seriesService.update(+id, updateSerieDto);
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
+  update(@Param('id') id: string, @Body() updateSerieDto: UpdateSerieDto, @UploadedFile() imagen?: Express.Multer.File) {
+    return this.seriesService.update(+id, updateSerieDto, imagen);
   }
 
   @Delete(':id')

@@ -4,7 +4,7 @@ import {
   IsOptional,
   IsString,
   IsNumber,
-  IsDateString,
+  IsDate,
 } from 'class-validator';
 
 /**
@@ -51,6 +51,14 @@ export class CreateSerieDto {
   @IsString()
   @IsOptional()
   pais?: string;
+
+  /**
+   * Fecha de lanzamiento de la serie. Campo opcional.
+   * @example "2024-08-15"
+   */
+  @IsString()
+  @IsOptional()
+  fechaLanzamiento?: string;
 
   /**
    * Arreglo de IDs numéricos de los equipos que participan en esta serie.
