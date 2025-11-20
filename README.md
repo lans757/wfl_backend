@@ -1,8 +1,25 @@
 # WFL Backend
 
+![WFL Logo](../wfl/public/logos/LOGO_WFL.png)
+
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-10.0.0-red)](https://nestjs.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-blue)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.0.0-2D3748)](https://www.prisma.io/)
+
 ## Descripción
 
 API REST backend para el sistema de gestión de la World Football League (WFL), construida con NestJS. Proporciona endpoints para gestionar series, equipos, jugadores y autenticación de usuarios.
+
+## ✨ Características
+
+- 🔐 **Autenticación JWT** - Sistema seguro con tokens JWT
+- ⚽ **Gestión de series** - API completa para torneos y competiciones
+- 👥 **Equipos y jugadores** - Endpoints para manejo de equipos y miembros
+- 📚 **Documentación Swagger** - API documentada automáticamente
+- 🗄️ **Base de datos Prisma** - ORM moderno con migraciones
+- 📁 **Subida de archivos** - Soporte para archivos con Multer
+- 🔒 **Encriptación** - Contraseñas seguras con bcrypt
 
 ## Tecnologías Utilizadas
 
@@ -157,3 +174,28 @@ Consulta el archivo `DEPLOYMENT.md` en el directorio raíz para instrucciones de
 - **Description**: Servicio no disponible
 - **Details**: El servicio no está disponible temporalmente
 - **HTTP Status**: 503 Service Unavailable
+
+## 🤝 Contribución
+
+¡Las contribuciones son bienvenidas! Para contribuir:
+
+1. 🍴 **Fork** el proyecto
+2. 🌿 Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. 💾 Realiza tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. 📤 Push a la rama (`git push origin feature/AmazingFeature`)
+5. 🔄 Abre un Pull Request
+
+### Guías de contribución
+
+- Sigue las convenciones de código existentes
+- Agrega tests para nuevas funcionalidades
+- Actualiza la documentación según sea necesario
+- Asegúrate de que todos los tests pasan
+
+## 📄 Licencia
+
+Este proyecto es privado y no tiene licencia pública.
+
+## 📞 Soporte
+
+Si tienes preguntas o necesitas ayuda, abre un [issue](https://github.com/tu-usuario/wfl/issues) en GitHub.
