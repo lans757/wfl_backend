@@ -12,7 +12,7 @@ WORKDIR /app
 FROM base AS deps
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 
 # Build stage
 FROM base AS builder
