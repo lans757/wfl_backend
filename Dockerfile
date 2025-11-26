@@ -2,7 +2,7 @@
 FROM node:18-alpine AS base
 
 # Instalar dependencias del sistema y pnpm
-RUN apk add --no-cache libc6-compat curl
+RUN apk add --no-cache libc6-compat curl openssl
 RUN npm install -g pnpm
 
 # Crear directorio de trabajo
@@ -11,6 +11,7 @@ WORKDIR /app
 # Copiar archivos de dependencias
 FROM base AS deps
 COPY package.json pnpm-lock.yaml ./
+COPY prisma ./prisma
 RUN pnpm install --prod --frozen-lockfile
 
 # Build stage
@@ -20,6 +21,9 @@ COPY . .
 
 # Install all dependencies (including dev) for build
 RUN pnpm install --frozen-lockfile
+
+# Generate Prisma Client
+RUN pnpm prisma generate
 
 # Build de la aplicación
 RUN pnpm run build
