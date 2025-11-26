@@ -1,0 +1,10 @@
+Dockerfile
+Dockerfile.backup
+docker-compose.yml
+*.db
+dev.db
+prisma/dev.db
+node_modules
+.env
+.env.local
+.git
