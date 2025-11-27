@@ -1,0 +1,5 @@
+{
+  "name": "wfl-backend-worker",
+  "compatibility_date": "2025-11-27",
+  "main": "src/index.ts"
+}
