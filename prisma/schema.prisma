@@ -13,7 +13,7 @@ model teams {
   description String?
   stadium     String?
   city        String?
-  image       String?
+  imagen      String?
   seriesId    Int?
   series      series?     @relation(fields: [seriesId], references: [id])
   createdAt   DateTime    @default(now())
@@ -29,7 +29,7 @@ model series {
   status          String?
   season          String?
   country         String?
-  image           String?
+  imagen          String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   teams           teams[]
@@ -41,7 +41,7 @@ model User {
   password  String
   name      String?
   role      String   @default("user")
-  image     String?
+  imagen    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -59,7 +59,7 @@ model players {
   secondaryPosition1  String?
   secondaryPosition2  String?
   rarity              String?
-  image               String?
+  imagen              String?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
   teamId              Int?

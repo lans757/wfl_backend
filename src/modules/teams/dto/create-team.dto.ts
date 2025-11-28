@@ -58,6 +58,6 @@ export class CreateTeamDto {
    */
   @IsString()
   @IsOptional()
-  image?: string;
+  imagen?: string;
 
 }

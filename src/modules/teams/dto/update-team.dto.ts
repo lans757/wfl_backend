@@ -55,5 +55,5 @@ export class UpdateTeamDto {
    */
   @IsString()
   @IsOptional()
-  image?: string;
+  imagen?: string;
 }

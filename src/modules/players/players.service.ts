@@ -32,7 +32,7 @@ export class PlayersService {
           secondaryPosition1: createPlayersDto.posicionSecundaria1,
           secondaryPosition2: createPlayersDto.posicionSecundaria2,
           rarity: createPlayersDto.rareza,
-          image: imagenPath
+          imagen: imagenPath
         }
       });
     } catch (error) {
@@ -82,7 +82,7 @@ export class PlayersService {
   private addImageUrls(players: any[]) {
     return players.map(player => ({
       ...player,
-      imageUrl: player.image ? `${process.env.BASE_URL || 'http://localhost:4000'}${player.image}` : null
+      imageUrl: player.imagen ? `${process.env.BASE_URL || 'http://localhost:4000'}${player.imagen}` : null
     }));
   }
 
@@ -148,7 +148,7 @@ export class PlayersService {
       }
 
       if (imagenPath) {
-        dataToUpdate.image = imagenPath;
+        dataToUpdate.imagen = imagenPath;
       }
 
       const playerUpdated = await this.prismaService.players.update({
@@ -191,11 +191,11 @@ export class PlayersService {
 
       const player = await this.prismaService.players.update({
         where: { id },
-        data: { image: imagenPath },
+        data: { imagen: imagenPath },
         select: {
           id: true,
           name: true,
-          image: true,
+          imagen: true,
         },
       });
 

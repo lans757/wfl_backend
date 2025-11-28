@@ -14,7 +14,7 @@ export class UsersService {
         id: true,
         email: true,
         name: true,
-        image: true,
+        imagen: true,
         createdAt: true,
         updatedAt: true,
       },

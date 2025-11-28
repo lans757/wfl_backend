@@ -11,7 +11,7 @@ export class TeamsService {
   private addImageUrls(teams: any[]) {
     return teams.map(team => ({
       ...team,
-      imageUrl: team.image ? `${process.env.BASE_URL || 'http://localhost:4000'}${team.image}` : null
+      imageUrl: team.imagen ? `${process.env.BASE_URL || 'http://localhost:4000'}${team.imagen}` : null
     }));
   }
 
@@ -27,7 +27,7 @@ export class TeamsService {
     const team = await this.prismaService.teams.create({
       data: {
         ...teamData,
-        image: imagenPath,
+        imagen: imagenPath,
         ...(seriesId && { seriesId })
       },
       include: { series: true, players: true }
@@ -81,7 +81,7 @@ export class TeamsService {
 
     const dataToUpdate: any = { ...updateTeamDto };
     if (imagenPath) {
-      dataToUpdate.image = imagenPath;
+      dataToUpdate.imagen = imagenPath;
     }
 
     const teamUpdated = await this.prismaService.teams.update({

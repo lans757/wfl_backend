@@ -78,12 +78,12 @@ export class AuthService {
     const imagePath = `/uploads/${file.filename}`;
     const user = await this.prisma.user.update({
       where: { id: userId },
-      data: { image: imagePath },
+      data: { imagen: imagePath },
       select: {
         id: true,
         email: true,
         name: true,
-        image: true,
+        imagen: true,
       },
     });
     return user;

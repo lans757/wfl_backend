@@ -10,9 +10,9 @@ export class SeriesController {
   constructor(private readonly seriesService: SeriesService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('image', FileUploadService.multerOptions))
-  create(@Body() createSerieDto: CreateSerieDto, @UploadedFile() image?: Express.Multer.File) {
-    return this.seriesService.create(createSerieDto, image);
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
+  create(@Body() createSerieDto: CreateSerieDto, @UploadedFile() imagen?: Express.Multer.File) {
+    return this.seriesService.create(createSerieDto, imagen);
   }
 
   @Get()
@@ -36,9 +36,9 @@ export class SeriesController {
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('image', FileUploadService.multerOptions))
-  update(@Param('id') id: string, @Body() updateSerieDto: UpdateSerieDto, @UploadedFile() image?: Express.Multer.File) {
-    return this.seriesService.update(+id, updateSerieDto, image);
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
+  update(@Param('id') id: string, @Body() updateSerieDto: UpdateSerieDto, @UploadedFile() imagen?: Express.Multer.File) {
+    return this.seriesService.update(+id, updateSerieDto, imagen);
   }
 
   @Delete(':id')

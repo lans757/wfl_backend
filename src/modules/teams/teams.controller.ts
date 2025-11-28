@@ -5,14 +5,14 @@ import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { FileUploadService } from '../../common/file-upload.service';
 
-@Controller('teams')
+@Controller('equipos')
 export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('image', FileUploadService.multerOptions))
-  create(@Body() createTeamDto: CreateTeamDto, @UploadedFile() image?: Express.Multer.File) {
-    return this.teamsService.create(createTeamDto, image);
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
+  create(@Body() createTeamDto: CreateTeamDto, @UploadedFile() imagen?: Express.Multer.File) {
+    return this.teamsService.create(createTeamDto, imagen);
   }
 
   @Get()
@@ -36,9 +36,9 @@ export class TeamsController {
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('image', FileUploadService.multerOptions))
-  update(@Param('id') id: string, @Body() updateTeamDto: UpdateTeamDto, @UploadedFile() image?: Express.Multer.File) {
-    return this.teamsService.update(+id, updateTeamDto, image);
+  @UseInterceptors(FileInterceptor('imagen', FileUploadService.multerOptions))
+  update(@Param('id') id: string, @Body() updateTeamDto: UpdateTeamDto, @UploadedFile() imagen?: Express.Multer.File) {
+    return this.teamsService.update(+id, updateTeamDto, imagen);
   }
 
   @Delete(':id')

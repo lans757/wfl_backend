@@ -11,7 +11,7 @@ export class SeriesService {
   private addImageUrls(series: any[]) {
     return series.map(serie => ({
       ...serie,
-      imageUrl: serie.image ? `${process.env.BASE_URL || 'http://localhost:4000'}${serie.image}` : null
+      imageUrl: serie.imagen ? `${process.env.BASE_URL || 'http://localhost:4000'}${serie.imagen}` : null
     }));
   }
 
@@ -43,7 +43,7 @@ export class SeriesService {
         status: createSerieDto.estado,
         country: createSerieDto.pais,
         launchDate: createSerieDto.fechaLanzamiento ? new Date(createSerieDto.fechaLanzamiento) : undefined,
-        image: imagenPath
+        imagen: imagenPath
       },
       include: { teams: true }
     });
@@ -99,7 +99,7 @@ export class SeriesService {
         status: updateSerieDto.estado,
         country: updateSerieDto.pais,
         launchDate: updateSerieDto.fechaLanzamiento ? new Date(updateSerieDto.fechaLanzamiento) : undefined,
-        ...(imagenPath && { image: imagenPath })
+        ...(imagenPath && { imagen: imagenPath })
       },
       include: { teams: true }
     });

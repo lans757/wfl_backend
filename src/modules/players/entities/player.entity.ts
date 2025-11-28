@@ -13,7 +13,7 @@ export class Player {
   secondaryPosition1?: string;
   secondaryPosition2?: string;
   rarity?: string;
-  image?: string;
+  imagen?: string;
   urlImage?: string;
   createdAt: Date;
   updatedAt: Date;
