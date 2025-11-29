@@ -37,7 +37,7 @@ export class SeriesService {
         status: createSerieDto.estado,
         country: createSerieDto.pais,
         launchDate: createSerieDto.fechaLanzamiento ? new Date(createSerieDto.fechaLanzamiento) : undefined,
-        imagen: imagenPath
+        image: imagenPath
       },
       include: { teams: true }
     });
@@ -92,7 +92,7 @@ export class SeriesService {
         status: updateSerieDto.estado,
         country: updateSerieDto.pais,
         launchDate: updateSerieDto.fechaLanzamiento ? new Date(updateSerieDto.fechaLanzamiento) : undefined,
-        ...(imagenPath && { imagen: imagenPath })
+        ...(imagenPath && { image: imagenPath })
       },
       include: { teams: true }
     });

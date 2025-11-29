@@ -32,7 +32,7 @@ export class PlayersService {
           secondaryPosition1: createPlayersDto.posicionSecundaria1,
           secondaryPosition2: createPlayersDto.posicionSecundaria2,
           rarity: createPlayersDto.rareza,
-          imagen: imagenPath
+          image: imagenPath
         }
       });
     } catch (error) {
@@ -140,7 +140,7 @@ export class PlayersService {
       }
 
       if (imagenPath) {
-        dataToUpdate.imagen = imagenPath;
+        dataToUpdate.image = imagenPath;
       }
 
       const playerUpdated = await this.prismaService.players.update({
@@ -183,11 +183,11 @@ export class PlayersService {
 
       const player = await this.prismaService.players.update({
         where: { id },
-        data: { imagen: imagenPath },
+        data: { image: imagenPath },
         select: {
           id: true,
           name: true,
-          imagen: true,
+          image: true,
         },
       });
 

@@ -21,7 +21,7 @@ export class TeamsService {
     const team = await this.prismaService.teams.create({
       data: {
         ...teamData,
-        imagen: imagenPath,
+        image: imagenPath,
         ...(seriesId && { seriesId })
       },
       include: { series: true, players: true }
@@ -74,7 +74,7 @@ export class TeamsService {
 
     const dataToUpdate: any = { ...updateTeamDto };
     if (imagenPath) {
-      dataToUpdate.imagen = imagenPath;
+      dataToUpdate.image = imagenPath;
     }
 
     const teamUpdated = await this.prismaService.teams.update({

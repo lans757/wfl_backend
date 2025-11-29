@@ -15,7 +15,7 @@ export class UsersService {
         id: true,
         email: true,
         name: true,
-        imagen: true,
+        image: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -103,7 +103,7 @@ export class UsersService {
         email: true,
         name: true,
         role: true,
-        imagen: true,
+        image: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -120,12 +120,12 @@ export class UsersService {
     const imagePath = `/uploads/${file.filename}`;
     const user = await this.prisma.user.update({
       where: { id: userId },
-      data: { imagen: imagePath },
+      data: { image: imagePath },
       select: {
         id: true,
         email: true,
         name: true,
-        imagen: true,
+        image: true,
       },
     });
     return user;
