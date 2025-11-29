@@ -143,74 +143,335 @@ NODE_ENV=production
 
 Consulta el archivo `DEPLOYMENT.md` en el directorio raíz para instrucciones de despliegue.
 
-## Error Codes Documentation
+## 📋 Documentación de Códigos de Error
 
-### ERR_001: Internal Server Error
-- **Description**: Error interno del servidor al crear el jugador
-- **Details**: Ocurrió un error inesperado durante la creación del jugador
-- **HTTP Status**: 500 Internal Server Error
+Esta sección documenta todos los códigos de error que pueden ocurrir en la API de WFL. Cada error incluye descripción, detalles y código HTTP correspondiente.
 
-### ERR_002: Validation Error
-- **Description**: Error de validación en los datos enviados
-- **Details**: Los datos proporcionados no cumplen con los requisitos de validación
-- **HTTP Status**: 400 Bad Request
+### 🔐 Errores de Autenticación y Autorización
 
-### ERR_003: Database Connection Error
-- **Description**: Error de conexión a la base de datos
-- **Details**: No se pudo establecer conexión con la base de datos
-- **HTTP Status**: 500 Internal Server Error
-
-### ERR_004: File Upload Error
-- **Description**: Error al subir archivo
-- **Details**: Ocurrió un error durante la subida del archivo
-- **HTTP Status**: 500 Internal Server Error
-
-### ERR_005: Authentication Error
-- **Description**: Error de autenticación
-- **Details**: Token inválido o expirado
+#### AUTH_001: Token JWT Inválido
+- **Descripción**: El token JWT proporcionado no es válido
+- **Detalles**: El token está malformado, corrupto o no sigue el formato JWT estándar
 - **HTTP Status**: 401 Unauthorized
+- **Solución**: Solicitar un nuevo token de acceso
 
-### ERR_006: Authorization Error
-- **Description**: Error de autorización
-- **Details**: No tienes permisos para realizar esta acción
-- **HTTP Status**: 403 Forbidden
+#### AUTH_002: Token JWT Expirado
+- **Descripción**: El token JWT ha expirado
+- **Detalles**: El token ha superado su tiempo de vida útil (TTL)
+- **HTTP Status**: 401 Unauthorized
+- **Solución**: Refrescar el token o iniciar sesión nuevamente
 
-### ERR_007: Not Found Error
-- **Description**: Recurso no encontrado
-- **Details**: El recurso solicitado no existe
+#### AUTH_003: Credenciales Incorrectas
+- **Descripción**: Email o contraseña incorrectos
+- **Detalles**: Las credenciales proporcionadas no coinciden con ningún usuario registrado
+- **HTTP Status**: 401 Unauthorized
+- **Solución**: Verificar email y contraseña
+
+#### AUTH_004: Usuario No Encontrado
+- **Descripción**: El usuario no existe en el sistema
+- **Detalles**: No se encontró un usuario con el email proporcionado
 - **HTTP Status**: 404 Not Found
+- **Solución**: Verificar que el email esté registrado
 
-### ERR_008: Conflict Error
-- **Description**: Conflicto de datos
-- **Details**: Ya existe un registro con esos datos
-- **HTTP Status**: 409 Conflict
+#### AUTH_005: Usuario Inactivo
+- **Descripción**: La cuenta del usuario está desactivada
+- **Detalles**: El usuario existe pero su cuenta está inactiva
+- **HTTP Status**: 403 Forbidden
+- **Solución**: Contactar al administrador del sistema
 
-### ERR_009: Bad Request
-- **Description**: Solicitud incorrecta
-- **Details**: Los parámetros de la solicitud son inválidos
+#### AUTH_006: Permisos Insuficientes
+- **Descripción**: El usuario no tiene permisos para realizar esta acción
+- **Detalles**: Se requiere rol de administrador para esta operación
+- **HTTP Status**: 403 Forbidden
+- **Solución**: Solicitar permisos de administrador
+
+#### AUTH_007: Token de Refresh Inválido
+- **Descripción**: El token de refresh proporcionado no es válido
+- **Detalles**: El token de refresh está corrupto o ha sido revocado
+- **HTTP Status**: 401 Unauthorized
+- **Solución**: Iniciar sesión nuevamente
+
+### 📝 Errores de Validación
+
+#### VAL_001: Campo Requerido Faltante
+- **Descripción**: Un campo obligatorio no fue proporcionado
+- **Detalles**: Campos como `name`, `email`, `password` son requeridos
 - **HTTP Status**: 400 Bad Request
+- **Solución**: Proporcionar todos los campos requeridos
 
-### ERR_010: Service Unavailable
-- **Description**: Servicio no disponible
-- **Details**: El servicio no está disponible temporalmente
+#### VAL_002: Formato de Email Inválido
+- **Descripción**: El email proporcionado no tiene un formato válido
+- **Detalles**: El email debe seguir el formato estándar (usuario@dominio.com)
+- **HTTP Status**: 400 Bad Request
+- **Solución**: Verificar el formato del email
+
+#### VAL_003: Contraseña Muy Corta
+- **Descripción**: La contraseña debe tener al menos 6 caracteres
+- **Detalles**: Por seguridad, las contraseñas deben ser de al menos 6 caracteres
+- **HTTP Status**: 400 Bad Request
+- **Solución**: Usar una contraseña más segura
+
+#### VAL_004: Nombre de Equipo Duplicado
+- **Descripción**: Ya existe un equipo con ese nombre
+- **Detalles**: Los nombres de equipos deben ser únicos en el sistema
+- **HTTP Status**: 409 Conflict
+- **Solución**: Elegir un nombre diferente para el equipo
+
+#### VAL_005: Serie No Encontrada
+- **Descripción**: La serie especificada no existe
+- **Detalles**: El `seriesId` proporcionado no corresponde a ninguna serie
+- **HTTP Status**: 404 Not Found
+- **Solución**: Verificar que la serie existe antes de asignarla
+
+#### VAL_006: Número de Camiseta Duplicado
+- **Descripción**: Ya existe un jugador con ese número en el equipo
+- **Detalles**: Los números de camiseta deben ser únicos dentro de cada equipo
+- **HTTP Status**: 409 Conflict
+- **Solución**: Elegir un número diferente
+
+#### VAL_007: Edad del Jugador Inválida
+- **Descripción**: La fecha de nacimiento resulta en una edad inválida
+- **Detalles**: Los jugadores deben tener entre 16 y 50 años
+- **HTTP Status**: 400 Bad Request
+- **Solución**: Verificar la fecha de nacimiento
+
+#### VAL_008: Archivo Muy Grande
+- **Descripción**: El archivo subido excede el tamaño máximo permitido
+- **Detalles**: Las imágenes deben ser menores a 5MB
+- **HTTP Status**: 400 Bad Request
+- **Solución**: Comprimir la imagen o usar una más pequeña
+
+#### VAL_009: Tipo de Archivo No Permitido
+- **Descripción**: El tipo de archivo no está permitido
+- **Detalles**: Solo se permiten imágenes JPG, PNG, GIF y WebP
+- **HTTP Status**: 400 Bad Request
+- **Solución**: Usar un formato de imagen válido
+
+### 🗄️ Errores de Base de Datos
+
+#### DB_001: Error de Conexión a Base de Datos
+- **Descripción**: No se pudo conectar a la base de datos
+- **Detalles**: Problemas de red, credenciales incorrectas o servidor caído
+- **HTTP Status**: 500 Internal Server Error
+- **Solución**: Verificar configuración de base de datos
+
+#### DB_002: Violación de Restricción Única
+- **Descripción**: Se intentó crear un registro que viola una restricción única
+- **Detalles**: Email duplicado, nombre de equipo duplicado, etc.
+- **HTTP Status**: 409 Conflict
+- **Solución**: Usar valores únicos
+
+#### DB_003: Violación de Clave Foránea
+- **Descripción**: Referencia a un registro que no existe
+- **Detalles**: Intentar asignar un equipo a una serie inexistente
+- **HTTP Status**: 400 Bad Request
+- **Solución**: Verificar que las referencias existen
+
+#### DB_004: Timeout de Base de Datos
+- **Descripción**: La consulta tardó demasiado en ejecutarse
+- **Detalles**: Consultas complejas o problemas de rendimiento
+- **HTTP Status**: 504 Gateway Timeout
+- **Solución**: Optimizar la consulta o contactar al administrador
+
+### 📁 Errores de Archivos
+
+#### FILE_001: Error al Subir Archivo
+- **Descripción**: Falló la subida del archivo al servidor
+- **Detalles**: Problemas de red, permisos o configuración del servidor
+- **HTTP Status**: 500 Internal Server Error
+- **Solución**: Intentar nuevamente o contactar soporte
+
+#### FILE_002: Archivo Corrupto
+- **Descripción**: El archivo subido está corrupto o dañado
+- **Detalles**: El archivo no se puede procesar correctamente
+- **HTTP Status**: 400 Bad Request
+- **Solución**: Subir un archivo válido
+
+#### FILE_003: Directorio de Upload No Existe
+- **Descripción**: El directorio de uploads no está disponible
+- **Detalles**: Problemas de configuración del servidor
+- **HTTP Status**: 500 Internal Server Error
+- **Solución**: Contactar al administrador del sistema
+
+#### FILE_004: Error al Procesar Imagen
+- **Descripción**: No se pudo procesar la imagen subida
+- **Detalles**: Formato no soportado o imagen corrupta
+- **HTTP Status**: 400 Bad Request
+- **Solución**: Verificar que la imagen sea válida
+
+### ⚽ Errores Específicos de WFL
+
+#### WFL_001: Serie Sin Equipos
+- **Descripción**: No se puede eliminar una serie que tiene equipos asignados
+- **Detalles**: Las series con equipos no pueden ser eliminadas
+- **HTTP Status**: 409 Conflict
+- **Solución**: Reasignar o eliminar los equipos primero
+
+#### WFL_002: Equipo Sin Jugadores
+- **Descripción**: No se puede eliminar un equipo que tiene jugadores
+- **Detalles**: Los equipos con jugadores no pueden ser eliminados
+- **HTTP Status**: 409 Conflict
+- **Solución**: Transferir o eliminar los jugadores primero
+
+#### WFL_003: Límite de Jugadores Alcanzado
+- **Descripción**: El equipo ya tiene el máximo de jugadores permitidos
+- **Detalles**: Cada equipo puede tener máximo 25 jugadores
+- **HTTP Status**: 409 Conflict
+- **Solución**: Crear un nuevo equipo o remover jugadores
+
+#### WFL_004: Temporada Activa
+- **Descripción**: No se pueden modificar series en temporada activa
+- **Detalles**: Las series activas no permiten cambios en configuración
+- **HTTP Status**: 409 Conflict
+- **Solución**: Esperar a que termine la temporada
+
+#### WFL_005: Jugador en Partido Activo
+- **Descripción**: No se puede modificar un jugador que está en un partido activo
+- **Detalles**: Los jugadores en partidos no pueden ser editados
+- **HTTP Status**: 409 Conflict
+- **Solución**: Esperar a que termine el partido
+
+### 🚨 Errores del Sistema
+
+#### SYS_001: Error Interno del Servidor
+- **Descripción**: Error inesperado en el servidor
+- **Detalles**: Excepción no manejada o error de lógica
+- **HTTP Status**: 500 Internal Server Error
+- **Solución**: Contactar al equipo de desarrollo
+
+#### SYS_002: Servicio No Disponible
+- **Descripción**: El servicio está temporalmente fuera de línea
+- **Detalles**: Mantenimiento, sobrecarga o problemas técnicos
 - **HTTP Status**: 503 Service Unavailable
+- **Solución**: Intentar nuevamente más tarde
 
-## 🤝 Contribución
+#### SYS_003: Rate Limit Excedido
+- **Descripción**: Demasiadas solicitudes en poco tiempo
+- **Detalles**: Límite de API excedido para prevenir abuso
+- **HTTP Status**: 429 Too Many Requests
+- **Solución**: Esperar antes de hacer más solicitudes
 
-¡Las contribuciones son bienvenidas! Para contribuir:
+#### SYS_004: Mantenimiento Programado
+- **Descripción**: El sistema está en mantenimiento
+- **Detalles**: Actualizaciones o mantenimiento preventivo
+- **HTTP Status**: 503 Service Unavailable
+- **Solución**: Revisar el sitio web para información de mantenimiento
 
-1. 🍴 **Fork** el proyecto
-2. 🌿 Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. 💾 Realiza tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. 📤 Push a la rama (`git push origin feature/AmazingFeature`)
-5. 🔄 Abre un Pull Request
+### 📊 Códigos de Estado HTTP Comunes
 
-### Guías de contribución
+| Código | Significado | Descripción |
+|--------|-------------|-------------|
+| 200 | OK | Solicitud exitosa |
+| 201 | Created | Recurso creado exitosamente |
+| 204 | No Content | Solicitud exitosa sin contenido de respuesta |
+| 400 | Bad Request | Solicitud malformada o inválida |
+| 401 | Unauthorized | Autenticación requerida |
+| 403 | Forbidden | Permisos insuficientes |
+| 404 | Not Found | Recurso no encontrado |
+| 409 | Conflict | Conflicto con el estado actual |
+| 422 | Unprocessable Entity | Datos válidos pero no procesables |
+| 429 | Too Many Requests | Rate limit excedido |
+| 500 | Internal Server Error | Error interno del servidor |
+| 503 | Service Unavailable | Servicio no disponible |
+| 504 | Gateway Timeout | Timeout de la solicitud |
 
-- Sigue las convenciones de código existentes
-- Agrega tests para nuevas funcionalidades
-- Actualiza la documentación según sea necesario
+### 🆘 Solución de Problemas
+
+Si encuentras un error no documentado:
+
+1. **Revisa los logs del servidor** para más detalles
+2. **Verifica la documentación de la API** en `/api/docs`
+3. **Abre un issue** en el repositorio con:
+   - Código de error recibido
+   - Endpoint que causó el error
+   - Datos enviados (sin información sensible)
+   - Headers de la solicitud
+   - Respuesta completa del servidor
+
+## 🤝 Únete al Equipo WFL
+
+¡Bienvenido a la Waifu Football League! Si eres un apasionado del fútbol, las waifus o el desarrollo de software, ¡este proyecto es para ti! 💙⚽
+
+### ¿Cómo contribuir?
+
+¡Las contribuciones son más que bienvenidas! Únete a nuestra comunidad de desarrolladores y ayuda a construir la mejor liga de fútbol virtual. Aquí te explicamos cómo:
+
+#### 🚀 Pasos para contribuir
+
+1. **🍴 Forkea el proyecto**
+   - Haz click en "Fork" en la esquina superior derecha de este repositorio
+   - Clona tu fork localmente: `git clone https://github.com/lans757/wfl_backend`
+
+2. **🌿 Crea tu rama de feature**
+   ```bash
+   git checkout -b feature/tu-super-feature
+   # O para correcciones:
+   git checkout -b fix/correccion-importante
+   # O para mejoras visuales:
+   git checkout -b ui/mejora-interfaz
+   ```
+
+3. **💾 Realiza tus cambios**
+   - Sigue las mejores prácticas de código
+   - Mantén commits descriptivos: `git commit -m 'feat: agregar sistema de estadísticas de jugadores'`
+   - Asegúrate de que todo funciona correctamente
+
+4. **📤 Sube tus cambios**
+   ```bash
+   git push origin feature/tu-super-feature
+   ```
+
+5. **🔄 Abre un Pull Request**
+   - Ve a la pestaña "Pull Requests" en este repositorio
+   - Haz click en "New Pull Request"
+   - Describe detalladamente qué has implementado
+   - ¡Menciona si has agregado nuevas waifus al proyecto! 😄
+
+#### 🎯 Tipos de contribuciones que necesitamos
+
+- **⚽ Nuevas funcionalidades**: Estadísticas de jugadores, torneos personalizados, modos de juego
+- **🐛 Corrección de bugs**: Reporta y arregla cualquier problema que encuentres
+- **🎨 Mejoras de UI/UX**: Haz que la interfaz sea más atractiva y fácil de usar
+- **📚 Documentación**: Mejora las guías, agrega ejemplos, traduce documentación
+- **🧪 Tests**: Agrega tests unitarios e integración para mayor estabilidad
+- **🌍 Internacionalización**: Soporte para múltiples idiomas
+- **🚀 Optimización**: Mejora el rendimiento y la velocidad de carga
+
+#### 📋 Guías de contribución
+
+**Código:**
+- Sigue las convenciones de TypeScript y NestJS
+- Usa ESLint y Prettier para mantener el código limpio
+- Comenta tu código cuando sea necesario
+- Mantén la consistencia con el estilo existente
+
+**Commits:**
+- Usa commits convencionales: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`
+- Mantén los commits pequeños y enfocados
+- Describe qué has hecho, no cómo lo has hecho
+
+**Pull Requests:**
+- Describe claramente qué problema resuelve tu PR
+- Incluye capturas de pantalla si has hecho cambios visuales
 - Asegúrate de que todos los tests pasan
+- Actualiza la documentación si es necesario
+
+**Comunidad:**
+- Sé respetuoso y constructivo en las revisiones de código
+- Ayuda a otros contribuidores cuando puedas
+- Comparte ideas y sugerencias en los issues
+
+#### 🏆 Reconocimientos
+
+¡Todos los contribuidores serán reconocidos en el proyecto! Los contribuidores destacados tendrán menciones especiales y podrán formar parte del "Equipo Técnico WFL".
+
+#### ❓ ¿Tienes preguntas?
+
+- Abre un [issue](https://github.com/lans757/wfl/issues) para preguntas generales
+- Únete a nuestras discusiones en GitHub Discussions
+- Revisa la documentación en los READMEs del proyecto
+
+¡Gracias por contribuir a hacer de WFL la mejor liga de fútbol virtual! ⚽💙
 
 ## 📄 Licencia
 
