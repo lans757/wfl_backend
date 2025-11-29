@@ -14,7 +14,7 @@ async function bootstrap() {
 
   // Habilitar CORS para el frontend
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://192.168.88.218:3000'],
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://192.168.88.218:3000', 'https://wfl-nu.vercel.app'],
     credentials: true,
   });
 
@@ -38,7 +38,7 @@ async function bootstrap() {
       'JWT-auth',
     )
     .addServer('http://localhost:4000', 'Servidor de desarrollo')
-    .addServer('https://api.wfl.com', 'Servidor de producción')
+    .addServer('https://wb-fawn.vercel.app/api', 'Servidor de producción')
     .setContact('WFL Support', 'https://github.com/lans757/wfl', 'support@wfl.com')
     .setLicense('Privado', 'https://github.com/lans757/wfl/blob/main/LICENSE')
     .build();
